@@ -5,36 +5,24 @@ app = Flask("Emotion Detector")
 
 @app.route("/emotionDetector")
 def sent_detector():
-    """
-    Получает текст из запроса, анализирует его с помощью emotion_detector
-    и возвращает форматированный ответ.
-    """
-    # Получаем текст для анализа из параметров запроса
     text_to_analyze = request.args.get('textToAnalyze')
-
-    # Вызываем функцию детекции эмоций
     response = emotion_detector(text_to_analyze)
 
-    # Извлекаем значения из словаря
-    anger = response['anger']
-    disgust = response['disgust']
-    fear = response['fear']
-    joy = response['joy']
-    sadness = response['sadness']
-    dominant_emotion = response['dominant_emotion']
+    # ПРОВЕРКА: Если доминирующая эмоция None, выводим ошибку
+    if response['dominant_emotion'] is None:
+        return "Invalid text! Please try again!"
 
+    # Если данные есть, формируем обычный ответ
     return (
         f"For the given statement, the system response is "
-        f"'anger': {anger}, 'disgust': {disgust}, 'fear': {fear}, "
-        f"'joy': {joy} and 'sadness': {sadness}. "
-        f"The dominant emotion is {dominant_emotion}."
+        f"'anger': {response['anger']}, 'disgust': {response['disgust']}, "
+        f"'fear': {response['fear']}, 'joy': {response['joy']} and "
+        f"'sadness': {response['sadness']}. "
+        f"The dominant emotion is {response['dominant_emotion']}."
     )
 
 @app.route("/")
 def render_index_page():
-    """
-    Отрисовывает главную страницу приложения.
-    """
     return render_template('index.html')
 
 if __name__ == "__main__":
